@@ -20,7 +20,7 @@ export function getPatient(patientId) {
 // 新增患者
 export function addPatient(data) {
   return request({
-    url: '/system/patient',
+    url: '/system/doctor/reception/save',
     method: 'post',
     data: data
   })

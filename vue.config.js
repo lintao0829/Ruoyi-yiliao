@@ -9,7 +9,7 @@ const CompressionPlugin = require('compression-webpack-plugin')
 
 const name = process.env.VUE_APP_TITLE || '医疗管理系统' // 网页标题
 
-const baseUrl = 'http://8.142.97.116:8080/' // 后端接口
+const baseUrl = 'https://yiliao.admin.php7788.com/' // 后端接口
 
 const port = process.env.port || process.env.npm_config_port || 80 // 端口
 

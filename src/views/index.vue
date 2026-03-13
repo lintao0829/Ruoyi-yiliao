@@ -44,7 +44,7 @@
     </div>
 
     <!-- 统计卡片区域 -->
-    <div class="stats-section">
+    <!-- <div class="stats-section">
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-icon bg-blue">
@@ -83,7 +83,7 @@
           </div>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <!-- 快捷操作区 -->
     <div class="actions-section">
@@ -96,13 +96,13 @@
           <div class="action-title">病历管理</div>
           <div class="action-desc">查看和管理患者病历</div>
         </div>
-        <!-- <div class="action-card" @click="handleAction('/appointment')">
+        <div class="action-card" @click="handleAction('/doctor_list_new')">
           <div class="action-icon bg-green">
             <i class="el-icon-date"></i>
           </div>
-          <div class="action-title">预约管理</div>
-          <div class="action-desc">查看和管理预约信息</div>
-        </div> -->
+          <div class="action-title">医生管理</div>
+          <div class="action-desc">查看和管理医生信息</div>
+        </div>
         <!-- <div class="action-card" @click="handleAction('/prescription')">
           <div class="action-icon bg-orange">
             <i class="el-icon-medical"></i>
@@ -162,6 +162,7 @@
 
 <script>
 import Cookies from 'js-cookie'
+import { listPatient } from "@/api/system/patient"
 
 export default {
   name: 'ClinicHome',
@@ -169,20 +170,32 @@ export default {
     return {
       doctorName: Cookies.get('username'),
       currentDate: '',
-      recentPatients: [
-        { id: 1, name: '王小明', gender: '男', age: 32, visitTime: '2026-03-06 09:30', diagnosis: '感冒' },
-        { id: 2, name: '李秀英', gender: '女', age: 45, visitTime: '2026-03-06 10:15', diagnosis: '高血压' },
-        { id: 3, name: '陈建国', gender: '男', age: 58, visitTime: '2026-03-06 11:00', diagnosis: '糖尿病' },
-        { id: 4, name: '刘美华', gender: '女', age: 29, visitTime: '2026-03-06 14:00', diagnosis: '过敏' },
-        { id: 5, name: '赵志强', gender: '男', age: 41, visitTime: '2026-03-06 15:30', diagnosis: '胃炎' }
-      ]
+      recentPatients: []
     }
   },
   created() {
-    console.log(Cookies.get('username'),'登录用户')
+    console.log(Cookies.get('username'), '登录用户')
     this.initDate()
+    this.getRecentPatients()
   },
   methods: {
+    /** 获取最近的患者列表 */
+    getRecentPatients() {
+      listPatient({ pageNum: 1, pageSize: 10, orderByColumn: 'visitTime', isAsc: 'desc' }).then(response => {
+        this.recentPatients = response.rows.map(item => ({
+          id: item.patientId,
+          name: item.patientName,
+          gender: item.gender === '0' ? '男' : '女',
+          age: item.age,
+          visitTime: item.visitTime,
+          diagnosis: item.diagnosisResult
+        }))
+      }).catch(() => {
+        // 接口调用失败时使用默认数据
+        this.recentPatients = [
+        ]
+      })
+    },
     initDate() {
       const now = new Date()
       const year = now.getFullYear()
@@ -457,7 +470,8 @@ export default {
       width: 100%;
       border-collapse: collapse;
 
-      th, td {
+      th,
+      td {
         padding: 16px;
         text-align: left;
         border-bottom: 1px solid #ebeef5;
@@ -514,6 +528,7 @@ export default {
 
 /* 响应式设计 */
 @media (max-width: 1200px) {
+
   .stats-grid,
   .actions-grid {
     grid-template-columns: repeat(2, 1fr);

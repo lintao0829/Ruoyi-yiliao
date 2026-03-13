@@ -6,30 +6,38 @@
         <pane size="16">
           <el-col>
             <div class="head-container">
-              <el-input v-model="deptName" placeholder="请输入部门名称" clearable size="small" prefix-icon="el-icon-search" style="margin-bottom: 20px" />
+              <el-input v-model="deptName" placeholder="请输入部门名称" clearable size="small" prefix-icon="el-icon-search"
+                style="margin-bottom: 20px" />
             </div>
             <div class="head-container">
-              <el-tree :data="deptOptions" :props="defaultProps" :expand-on-click-node="false" :filter-node-method="filterNode" ref="tree" node-key="id" default-expand-all highlight-current @node-click="handleNodeClick" />
+              <el-tree :data="deptOptions" :props="defaultProps" :expand-on-click-node="false"
+                :filter-node-method="filterNode" ref="tree" node-key="id" default-expand-all highlight-current
+                @node-click="handleNodeClick" />
             </div>
           </el-col>
         </pane>
-        <!--用户数据-->
+        <!--医生数据-->
         <pane size="84">
           <el-col>
-            <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch" label-width="68px">
-              <el-form-item label="用户名称" prop="userName">
-                <el-input v-model="queryParams.userName" placeholder="请输入用户名称" clearable style="width: 240px" @keyup.enter.native="handleQuery" />
+            <el-form :model="queryParams" ref="queryForm" size="small" :inline="true" v-show="showSearch"
+              label-width="68px">
+              <el-form-item label="医生名称" prop="userName">
+                <el-input v-model="queryParams.userName" placeholder="请输入医生名称" clearable style="width: 240px"
+                  @keyup.enter.native="handleQuery" />
               </el-form-item>
               <el-form-item label="手机号码" prop="phonenumber">
-                <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable style="width: 240px" @keyup.enter.native="handleQuery" />
+                <el-input v-model="queryParams.phonenumber" placeholder="请输入手机号码" clearable style="width: 240px"
+                  @keyup.enter.native="handleQuery" />
               </el-form-item>
               <el-form-item label="状态" prop="status">
-                <el-select v-model="queryParams.status" placeholder="用户状态" clearable style="width: 240px">
-                  <el-option v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.label" :value="dict.value" />
+                <el-select v-model="queryParams.status" placeholder="医生状态" clearable style="width: 240px">
+                  <el-option v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.label"
+                    :value="dict.value" />
                 </el-select>
               </el-form-item>
               <el-form-item label="创建时间">
-                <el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd" type="daterange" range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
+                <el-date-picker v-model="dateRange" style="width: 240px" value-format="yyyy-MM-dd" type="daterange"
+                  range-separator="-" start-placeholder="开始日期" end-placeholder="结束日期"></el-date-picker>
               </el-form-item>
               <el-form-item>
                 <el-button type="primary" icon="el-icon-search" size="mini" @click="handleQuery">搜索</el-button>
@@ -39,76 +47,108 @@
 
             <el-row :gutter="10" class="mb8">
               <el-col :span="1.5">
-                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd" v-hasPermi="['system:user:add']">新增</el-button>
+                <el-button type="primary" plain icon="el-icon-plus" size="mini" @click="handleAdd"
+                  v-hasPermi="['system:user:add']">新增</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate" v-hasPermi="['system:user:edit']">修改</el-button>
+                <el-button type="success" plain icon="el-icon-edit" size="mini" :disabled="single" @click="handleUpdate"
+                  v-hasPermi="['system:user:edit']">修改</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple" @click="handleDelete" v-hasPermi="['system:user:remove']">删除</el-button>
+                <el-button type="danger" plain icon="el-icon-delete" size="mini" :disabled="multiple"
+                  @click="handleDelete" v-hasPermi="['system:user:remove']">删除</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="info" plain icon="el-icon-upload2" size="mini" @click="handleImport" v-hasPermi="['system:user:import']">导入</el-button>
+                <el-button type="info" plain icon="el-icon-upload2" size="mini" @click="handleImport"
+                  v-hasPermi="['system:user:import']">导入</el-button>
               </el-col>
               <el-col :span="1.5">
-                <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport" v-hasPermi="['system:user:export']">导出</el-button>
+                <el-button type="warning" plain icon="el-icon-download" size="mini" @click="handleExport"
+                  v-hasPermi="['system:user:export']">导出</el-button>
               </el-col>
               <right-toolbar :showSearch.sync="showSearch" @queryTable="getList" :columns="columns"></right-toolbar>
             </el-row>
 
             <el-table v-loading="loading" :data="userList" @selection-change="handleSelectionChange">
               <el-table-column type="selection" width="50" align="center" />
-              <el-table-column label="用户编号" align="center" key="userId" prop="userId" v-if="columns.userId.visible" />
-              <el-table-column label="用户名称" align="center" key="userName" prop="userName" v-if="columns.userName.visible" :show-overflow-tooltip="true" />
-              <el-table-column label="用户昵称" align="center" key="nickName" prop="nickName" v-if="columns.nickName.visible" :show-overflow-tooltip="true" />
-              <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName" v-if="columns.deptName.visible" :show-overflow-tooltip="true" />
-              <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber" v-if="columns.phonenumber.visible" width="120" />
+              <el-table-column label="医生编号" align="center" key="userId" prop="userId" v-if="columns.userId.visible" />
+              <el-table-column label="医生名称" align="center" key="userName" prop="userName"
+                v-if="columns.userName.visible" :show-overflow-tooltip="true" />
+              <el-table-column label="医生昵称" align="center" key="nickName" prop="nickName"
+                v-if="columns.nickName.visible" :show-overflow-tooltip="true" />
+              <el-table-column label="部门" align="center" key="deptName" prop="dept.deptName"
+                v-if="columns.deptName.visible" :show-overflow-tooltip="true" />
+              <el-table-column label="手机号码" align="center" key="phonenumber" prop="phonenumber"
+                v-if="columns.phonenumber.visible" width="120" />
               <el-table-column label="状态" align="center" key="status" v-if="columns.status.visible">
                 <template slot-scope="scope">
-                  <el-switch v-model="scope.row.status" active-value="0" inactive-value="1" @change="handleStatusChange(scope.row)"></el-switch>
+                  <el-switch v-model="scope.row.status" active-value="0" inactive-value="1"
+                    @change="handleStatusChange(scope.row)"></el-switch>
                 </template>
               </el-table-column>
-              <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns.createTime.visible" width="160">
+              <el-table-column label="创建时间" align="center" prop="createTime" v-if="columns.createTime.visible"
+                width="160">
                 <template slot-scope="scope">
                   <span>{{ parseTime(scope.row.createTime) }}</span>
                 </template>
               </el-table-column>
               <el-table-column label="操作" align="center" width="160" class-name="small-padding fixed-width">
                 <template slot-scope="scope" v-if="scope.row.userId !== 1">
-                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)" v-hasPermi="['system:user:edit']">修改</el-button>
-                  <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)" v-hasPermi="['system:user:remove']">删除</el-button>
-                  <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)" v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
+                  <el-button size="mini" type="text" icon="el-icon-edit" @click="handleUpdate(scope.row)"
+                    v-hasPermi="['system:user:edit']">修改</el-button>
+                  <el-button size="mini" type="text" icon="el-icon-delete" @click="handleDelete(scope.row)"
+                    v-hasPermi="['system:user:remove']">删除</el-button>
+                  <el-dropdown size="mini" @command="(command) => handleCommand(command, scope.row)"
+                    v-hasPermi="['system:user:resetPwd', 'system:user:edit']">
                     <el-button size="mini" type="text" icon="el-icon-d-arrow-right">更多</el-button>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item command="handleResetPwd" icon="el-icon-key" v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
-                      <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check" v-hasPermi="['system:user:edit']">分配角色</el-dropdown-item>
+                      <el-dropdown-item command="handleResetPwd" icon="el-icon-key"
+                        v-hasPermi="['system:user:resetPwd']">重置密码</el-dropdown-item>
+                      <el-dropdown-item command="handleAuthRole" icon="el-icon-circle-check"
+                        v-hasPermi="['system:user:edit']">分配角色</el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
                 </template>
               </el-table-column>
             </el-table>
 
-            <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum" :limit.sync="queryParams.pageSize" @pagination="getList" />
+            <pagination v-show="total > 0" :total="total" :page.sync="queryParams.pageNum"
+              :limit.sync="queryParams.pageSize" @pagination="getList" />
           </el-col>
         </pane>
       </splitpanes>
     </el-row>
 
-    <!-- 添加或修改用户配置对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="600px" append-to-body>
+    <!-- 添加或修改医生配置对话框 -->
+    <el-dialog :title="title" :visible.sync="open" width="800px" append-to-body>
       <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+        <!-- 基本信息 -->
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户昵称" prop="nickName">
-              <el-input v-model="form.nickName" placeholder="请输入用户昵称" maxlength="30" />
+            <el-form-item label="医生名称" prop="userName">
+              <el-input v-model="form.userName" placeholder="请输入医生名称" maxlength="30" :disabled="form.userId != undefined" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="医生昵称" prop="nickName">
+              <el-input v-model="form.nickName" placeholder="请输入医生昵称" maxlength="30" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="12">
+            <el-form-item label="医生密码" prop="password" v-if="form.userId == undefined">
+              <el-input v-model="form.password" placeholder="请输入医生密码" type="password" maxlength="20" show-password />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="归属部门" prop="deptId">
-              <treeselect v-model="form.deptId" :options="enabledDeptOptions" :show-count="true" placeholder="请选择归属部门" />
+              <treeselect v-model="form.deptId" :options="enabledDeptOptions" :show-count="true"
+                placeholder="请选择归属部门" />
             </el-form-item>
           </el-col>
         </el-row>
+        <!-- 个人信息 -->
         <el-row>
           <el-col :span="12">
             <el-form-item label="手机号码" prop="phonenumber">
@@ -123,28 +163,32 @@
         </el-row>
         <el-row>
           <el-col :span="12">
-            <el-form-item v-if="form.userId == undefined" label="用户名称" prop="userName">
-              <el-input v-model="form.userName" placeholder="请输入用户名称" maxlength="30" />
+            <el-form-item label="医生性别">
+              <el-select v-model="form.sex" placeholder="请选择性别">
+                <el-option v-for="dict in dict.type.sys_user_sex" :key="dict.value" :label="dict.label"
+                  :value="dict.value"></el-option>
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item v-if="form.userId == undefined" label="用户密码" prop="password">
-              <el-input v-model="form.password" placeholder="请输入用户密码" type="password" maxlength="20" show-password />
+            <el-form-item label="入职时间" prop="hireDate">
+              <el-date-picker v-model="form.hireDate" type="date" placeholder="请选择入职时间" style="width: 100%;" />
             </el-form-item>
           </el-col>
         </el-row>
+        <!-- 职业信息 -->
         <el-row>
           <el-col :span="12">
-            <el-form-item label="用户性别">
-              <el-select v-model="form.sex" placeholder="请选择性别">
-                <el-option v-for="dict in dict.type.sys_user_sex" :key="dict.value" :label="dict.label" :value="dict.value"></el-option>
-              </el-select>
+            <el-form-item label="科室" prop="department">
+              <el-input v-model="form.department" placeholder="请输入科室" />
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="状态">
               <el-radio-group v-model="form.status">
-                <el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">{{ dict.label }}</el-radio>
+                <el-radio v-for="dict in dict.type.sys_normal_disable" :key="dict.value" :label="dict.value">{{
+                  dict.label
+                }}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-col>
@@ -153,18 +197,45 @@
           <el-col :span="12">
             <el-form-item label="岗位">
               <el-select v-model="form.postIds" multiple placeholder="请选择岗位">
-                <el-option v-for="item in postOptions" :key="item.postId" :label="item.postName" :value="item.postId" :disabled="item.status == 1" ></el-option>
+                <el-option v-for="item in postOptions" :key="item.postId" :label="item.postName" :value="item.postId"
+                  :disabled="item.status == 1"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
             <el-form-item label="角色">
               <el-select v-model="form.roleIds" multiple placeholder="请选择角色">
-                <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId" :disabled="item.status == 1"></el-option>
+                <el-option v-for="item in roleOptions" :key="item.roleId" :label="item.roleName" :value="item.roleId"
+                  :disabled="item.status == 1"></el-option>
               </el-select>
             </el-form-item>
           </el-col>
         </el-row>
+        <!-- 详细信息 -->
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="医生简介" prop="introduction">
+              <el-input v-model="form.introduction" :rows="4" type="textarea" placeholder="请输入医生简介" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-form-item label="医生图片" prop="doctorImg">
+              <el-upload action="https://yiliao.admin.php7788.com/prod-api/system/file/upload" list-type="picture-card"
+                :file-list="doctorImgList" :on-preview="handlePictureCardPreview" :on-success="handleDoctorImgSuccess"
+                :on-remove="handleDoctorImgRemove" :before-upload="beforeDoctorImgUpload" :limit="1" multiple
+                :data="{ bizType: 'doctor' }">
+                <i class="el-icon-plus"></i>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，单个不超过500KB，最多1张</div>
+              </el-upload>
+              <el-dialog :visible.sync="dialogVisible" append-to-body>
+                <img width="100%" :src="dialogImageUrl" alt="">
+              </el-dialog>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <!-- 备注 -->
         <el-row>
           <el-col :span="24">
             <el-form-item label="备注">
@@ -179,17 +250,20 @@
       </div>
     </el-dialog>
 
-    <!-- 用户导入对话框 -->
+    <!-- 医生导入对话框 -->
     <el-dialog :title="upload.title" :visible.sync="upload.open" width="400px" append-to-body>
-      <el-upload ref="upload" :limit="1" accept=".xlsx, .xls" :headers="upload.headers" :action="upload.url + '?updateSupport=' + upload.updateSupport" :disabled="upload.isUploading" :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess" :auto-upload="false" drag>
+      <el-upload ref="upload" :limit="1" accept=".xlsx, .xls" :headers="upload.headers"
+        :action="upload.url + '?updateSupport=' + upload.updateSupport" :disabled="upload.isUploading"
+        :on-progress="handleFileUploadProgress" :on-success="handleFileSuccess" :auto-upload="false" drag>
         <i class="el-icon-upload"></i>
         <div class="el-upload__text">将文件拖到此处，或<em>点击上传</em></div>
         <div class="el-upload__tip text-center" slot="tip">
           <div class="el-upload__tip" slot="tip">
-            <el-checkbox v-model="upload.updateSupport" />是否更新已经存在的用户数据
+            <el-checkbox v-model="upload.updateSupport" />是否更新已经存在的医生数据
           </div>
           <span>仅允许导入xls、xlsx格式文件。</span>
-          <el-link type="primary" :underline="false" style="font-size: 12px; vertical-align: baseline" @click="importTemplate">下载模板</el-link>
+          <el-link type="primary" :underline="false" style="font-size: 12px; vertical-align: baseline"
+            @click="importTemplate">下载模板</el-link>
         </div>
       </el-upload>
       <div slot="footer" class="dialog-footer">
@@ -226,7 +300,7 @@ export default {
       showSearch: true,
       // 总条数
       total: 0,
-      // 用户表格数据
+      // 医生表格数据
       userList: null,
       // 弹出层标题
       title: "",
@@ -252,15 +326,15 @@ export default {
         children: "children",
         label: "label"
       },
-      // 用户导入参数
+      // 医生导入参数
       upload: {
-        // 是否显示弹出层（用户导入）
+        // 是否显示弹出层（医生导入）
         open: false,
-        // 弹出层标题（用户导入）
+        // 弹出层标题（医生导入）
         title: "",
         // 是否禁用上传
         isUploading: false,
-        // 是否更新已经存在的用户数据
+        // 是否更新已经存在的医生数据
         updateSupport: 0,
         // 设置上传的请求头部
         headers: { Authorization: "Bearer " + getToken() },
@@ -278,26 +352,30 @@ export default {
       },
       // 列信息
       columns: {
-        userId: { label: '用户编号', visible: true },
-        userName: { label: '用户名称', visible: true },
-        nickName: { label: '用户昵称', visible: true },
+        userId: { label: '医生编号', visible: true },
+        userName: { label: '医生名称', visible: true },
+        nickName: { label: '医生昵称', visible: true },
         deptName: { label: '部门', visible: true },
         phonenumber: { label: '手机号码', visible: true },
         status: { label: '状态', visible: true },
         createTime: { label: '创建时间', visible: true }
       },
+      // 图片上传相关
+      doctorImgList: [],
+      dialogVisible: false,
+      dialogImageUrl: "",
       // 表单校验
       rules: {
         userName: [
-          { required: true, message: "用户名称不能为空", trigger: "blur" },
-          { min: 2, max: 20, message: '用户名称长度必须介于 2 和 20 之间', trigger: 'blur' }
+          { required: true, message: "医生名称不能为空", trigger: "blur" },
+          { min: 2, max: 20, message: '医生名称长度必须介于 2 和 20 之间', trigger: 'blur' }
         ],
         nickName: [
-          { required: true, message: "用户昵称不能为空", trigger: "blur" }
+          { required: true, message: "医生昵称不能为空", trigger: "blur" }
         ],
         password: [
-          { required: true, message: "用户密码不能为空", trigger: "blur" },
-          { min: 5, max: 20, message: '用户密码长度必须介于 5 和 20 之间', trigger: 'blur' },
+          { required: true, message: "医生密码不能为空", trigger: "blur" },
+          { min: 5, max: 20, message: '医生密码长度必须介于 5 和 20 之间', trigger: 'blur' },
           { pattern: /^[^<>"'|\\]+$/, message: "不能包含非法字符：< > \" ' \\\ |", trigger: "blur" }
         ],
         email: [
@@ -331,14 +409,14 @@ export default {
     })
   },
   methods: {
-    /** 查询用户列表 */
+    /** 查询医生列表 */
     getList() {
       this.loading = true
       listUser(this.addDateRange(this.queryParams, this.dateRange)).then(response => {
-          this.userList = response.rows
-          this.total = response.total
-          this.loading = false
-        }
+        this.userList = response.rows
+        this.total = response.total
+        this.loading = false
+      }
       )
     },
     /** 查询部门下拉树结构 */
@@ -370,14 +448,14 @@ export default {
       this.queryParams.deptId = data.id
       this.handleQuery()
     },
-    // 用户状态修改
+    // 医生状态修改
     handleStatusChange(row) {
       let text = row.status === "0" ? "启用" : "停用"
-      this.$modal.confirm('确认要"' + text + '""' + row.userName + '"用户吗？').then(function() {
+      this.$modal.confirm('确认要"' + text + '""' + row.userName + '"医生吗？').then(function () {
         return changeUserStatus(row.userId, row.status)
       }).then(() => {
         this.$modal.msgSuccess(text + "成功")
-      }).catch(function() {
+      }).catch(function () {
         row.status = row.status === "0" ? "1" : "0"
       })
     },
@@ -400,7 +478,11 @@ export default {
         status: "0",
         remark: undefined,
         postIds: [],
-        roleIds: []
+        roleIds: [],
+        department: undefined,
+        hireDate: undefined,
+        introduction: undefined,
+        doctorImg: undefined
       }
       this.resetForm("form")
     },
@@ -443,7 +525,7 @@ export default {
         this.postOptions = response.posts
         this.roleOptions = response.roles
         this.open = true
-        this.title = "添加用户"
+        this.title = "添加医生"
         this.form.password = this.initPassword
       })
     },
@@ -452,13 +534,24 @@ export default {
       this.reset()
       const userId = row.userId || this.ids
       getUser(userId).then(response => {
-        this.form = response.data
+        // 确保form对象存在
+        if (!this.form) {
+          this.form = {}
+        }
+        // 合并响应数据到form对象
+        Object.assign(this.form, response.data)
         this.postOptions = response.posts
         this.roleOptions = response.roles
         this.$set(this.form, "postIds", response.postIds)
         this.$set(this.form, "roleIds", response.roleIds)
+        // 处理医生图片的回显
+        if (this.form.doctorImg) {
+          this.doctorImgList = this.form.doctorImg.split(',').map(url => ({
+            url: 'https://yiliao.admin.php7788.com' + url.replace(/^`|`$/g, '')
+          }))
+        }
+        this.title = "修改医生"
         this.open = true
-        this.title = "修改用户"
         this.form.password = ""
       })
     },
@@ -469,27 +562,29 @@ export default {
         cancelButtonText: "取消",
         closeOnClickModal: false,
         inputPattern: /^.{5,20}$/,
-        inputErrorMessage: "用户密码长度必须介于 5 和 20 之间",
+        inputErrorMessage: "医生密码长度必须介于 5 和 20 之间",
         inputValidator: (value) => {
           if (/<|>|"|'|\||\\/.test(value)) {
             return "不能包含非法字符：< > \" ' \\\ |"
           }
         },
       }).then(({ value }) => {
-          resetUserPwd(row.userId, value).then(() => {
-            this.$modal.msgSuccess("修改成功，新密码是：" + value)
-          })
-        }).catch(() => {})
+        resetUserPwd(row.userId, value).then(() => {
+          this.$modal.msgSuccess("修改成功，新密码是：" + value)
+        })
+      }).catch(() => { })
     },
     /** 分配角色操作 */
-    handleAuthRole: function(row) {
+    handleAuthRole: function (row) {
       const userId = row.userId
       this.$router.push("/system/user-auth/role/" + userId)
     },
     /** 提交按钮 */
-    submitForm: function() {
+    submitForm: function () {
       this.$refs["form"].validate(valid => {
         if (valid) {
+          console.log(this.form, 'this.form====')
+
           if (this.form.userId != undefined) {
             updateUser(this.form).then(() => {
               this.$modal.msgSuccess("修改成功")
@@ -506,15 +601,51 @@ export default {
         }
       })
     },
+    /** 医生图片上传成功 */
+    handleDoctorImgSuccess(response, file, fileList) {
+      if (response.code === 200) {
+        this.doctorImgList = fileList
+        this.form.doctorImg = response.data
+        this.$message.success('上传成功')
+      } else {
+        this.$message.error(response.msg || '上传失败')
+      }
+    },
+    /** 医生图片移除 */
+    handleDoctorImgRemove(file, fileList) {
+      this.doctorImgList = fileList
+      this.form.doctorImg = fileList.map(item => item.response.url).join(',')
+    },
+    /** 医生图片预览 */
+    handlePictureCardPreview(file) {
+      this.dialogImageUrl = file.url
+      this.dialogVisible = true
+    },
+    /** 医生图片上传前校验 */
+    beforeDoctorImgUpload(file) {
+      const isJPG = file.type === 'image/jpeg'
+      const isPNG = file.type === 'image/png'
+      const isLt500K = file.size / 1024 <= 500
+
+      if (!isJPG && !isPNG) {
+        this.$message.error('上传图片只能是 JPG 或 PNG 格式!')
+        return false
+      }
+      if (!isLt500K) {
+        this.$message.error('上传图片大小不能超过 500KB!')
+        return false
+      }
+      return true
+    },
     /** 删除按钮操作 */
     handleDelete(row) {
       const userIds = row.userId || this.ids
-      this.$modal.confirm('是否确认删除用户编号为"' + userIds + '"的数据项？').then(function() {
+      this.$modal.confirm('是否确认删除医生编号为"' + userIds + '"的数据项？').then(function () {
         return delUser(userIds)
       }).then(() => {
         this.getList()
         this.$modal.msgSuccess("删除成功")
-      }).catch(() => {})
+      }).catch(() => { })
     },
     /** 导出按钮操作 */
     handleExport() {
@@ -524,7 +655,7 @@ export default {
     },
     /** 导入按钮操作 */
     handleImport() {
-      this.upload.title = "用户导入"
+      this.upload.title = "医生导入"
       this.upload.open = true
     },
     /** 下载模板操作 */
