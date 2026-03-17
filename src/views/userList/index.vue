@@ -126,7 +126,7 @@
                 value-format="yyyy-MM-dd HH:mm:ss" />
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+          <!-- <el-col :span="24">
             <el-form-item label="病历图片" prop="imgUrl">
               <el-upload action="https://yiliao.admin.php7788.com/prod-api/system/file/upload" list-type="picture-card"
                 :file-list="medicalRecordImgList" :on-preview="handlePictureCardPreview" :on-success="handleMedicalImgSuccess"
@@ -138,12 +138,12 @@
                 <img width="100%" :src="dialogImageUrl" alt="">
               </el-dialog>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-form-item label="地址" prop="address">
           <el-input v-model="form.address" type="textarea" placeholder="请输入地址" />
         </el-form-item>
-        <el-form-item label="诊断结果" prop="diagnosisResult">
+        <!-- <el-form-item label="诊断结果" prop="diagnosisResult">
           <el-input v-model="form.diagnosisResult" :rows="4" type="textarea" placeholder="请输入诊断结果" />
         </el-form-item>
         <el-form-item label="治疗建议" prop="treatmentSuggestion">
@@ -151,8 +151,55 @@
         </el-form-item>
         <el-form-item label="备注" prop="remark">
           <el-input v-model="form.remark" :rows="3" type="textarea" placeholder="请输入备注" />
-        </el-form-item>
+        </el-form-item> -->
       </el-form>
+      <!-- 就诊记录列表 -->
+      <div v-if="form.patientId" class="record-section"
+        style="margin-top: 20px; border-top: 1px solid #eee; padding-top: 20px;">
+        <div class="record-header"
+          style="margin-bottom: 15px; display: flex; justify-content: space-between; align-items: center;">
+          <h3 style="margin: 0; font-size: 16px; font-weight: bold;">就诊记录列表</h3>
+          <el-button type="primary" size="small" icon="el-icon-plus" @click="handleAddRecord">新增记录</el-button>
+        </div>
+        <el-table v-loading="recordLoading" :data="recordList" border style="width: 100%">
+          <el-table-column type="index" label="序号" width="50" align="center" />
+          <el-table-column label="糖化血红蛋白(%)" prop="sugarValue" width="120" align="center" />
+          <el-table-column label="收缩压(mmHg)" prop="systolicPressure" width="110" align="center" />
+          <el-table-column label="舒张压(mmHg)" prop="diastolicPressure" width="110" align="center" />
+          <el-table-column label="低密度脂蛋白(mmol/L)" prop="ldlValue" width="150" align="center" />
+          <el-table-column label="身高(cm)" prop="height" width="90" align="center" />
+          <el-table-column label="体重(kg)" prop="weight" width="90" align="center" />
+          <el-table-column label="吸烟支数" prop="smokingCount" width="90" align="center" />
+          <el-table-column label="总评分" prop="totalScore" width="80" align="center">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.totalScore >= 10 ? 'danger' : scope.row.totalScore >= 5 ? 'warning' : 'success'">
+                {{ scope.row.totalScore }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="风险等级" prop="riskLevel" width="100" align="center">
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.riskLevel === '高危' ? 'danger' : scope.row.riskLevel === '中危' ? 'warning' : 'success'">
+                {{ scope.row.riskLevel }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="创建时间" prop="createTime" width="160" align="center" />
+          <el-table-column label="操作" align="center" width="200" fixed="right">
+            <template slot-scope="scope">
+              <el-button size="mini" type="text" icon="el-icon-view" @click="handleViewRecord(scope.row)">查看</el-button>
+              <el-button size="mini" type="text" icon="el-icon-edit"
+                @click="handleUpdateRecord(scope.row)">编辑</el-button>
+              <el-button size="mini" type="text" icon="el-icon-delete"
+                @click="handleDeleteRecord(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <pagination v-show="recordTotal > 0" :total="recordTotal" :page.sync="recordQueryParams.pageNum"
+          :limit.sync="recordQueryParams.pageSize" @pagination="getRecordList" />
+      </div>
+
       <div slot="footer" class="dialog-footer">
         <el-button type="primary" @click="submitForm">确 定</el-button>
         <el-button @click="cancel">取 消</el-button>
@@ -210,7 +257,7 @@
               <el-date-picker v-model="viewForm.visitTime" type="datetime" placeholder="请选择就诊时间" style="width: 100%" />
             </el-form-item>
           </el-col>
-          <el-col :span="24">
+          <!-- <el-col :span="24">
             <el-form-item label="病历图片" prop="imgUrl">
               <el-upload disabled action="/system/file/upload" list-type="picture-card"
                 :file-list="medicalRecordImgList" :on-preview="handlePictureCardPreview"
@@ -222,12 +269,12 @@
                 <img width="100%" :src="dialogImageUrl" alt="">
               </el-dialog>
             </el-form-item>
-          </el-col>
+          </el-col> -->
         </el-row>
         <el-form-item label="地址" prop="address">
           <el-input v-model="viewForm.address" type="textarea" placeholder="请输入地址" />
         </el-form-item>
-        <el-form-item label="诊断结果" prop="diagnosisResult">
+        <!-- <el-form-item label="诊断结果" prop="diagnosisResult">
           <el-input v-model="viewForm.diagnosisResult" :rows="4" type="textarea" placeholder="请输入诊断结果" />
         </el-form-item>
         <el-form-item label="病历备注" prop="medicalRemark">
@@ -235,13 +282,190 @@
         </el-form-item>
         <el-form-item label="治疗建议" prop="treatmentSuggestion">
           <el-input v-model="viewForm.treatmentSuggestion" :rows="4" type="textarea" placeholder="请输入治疗建议" />
-        </el-form-item>
-        <el-form-item label="备注" prop="remark">
+        </el-form-item> -->
+        <!-- <el-form-item label="备注" prop="remark">
           <el-input v-model="viewForm.remark" :rows="3" type="textarea" placeholder="请输入备注" />
-        </el-form-item>
+        </el-form-item> -->
+        <el-table v-loading="recordLoading" :data="recordList" border style="width: 100%">
+          <el-table-column type="index" label="序号" width="50" align="center" />
+          <el-table-column label="糖化血红蛋白(%)" prop="sugarValue" width="120" align="center" />
+          <el-table-column label="收缩压(mmHg)" prop="systolicPressure" width="110" align="center" />
+          <el-table-column label="舒张压(mmHg)" prop="diastolicPressure" width="110" align="center" />
+          <el-table-column label="低密度脂蛋白(mmol/L)" prop="ldlValue" width="150" align="center" />
+          <el-table-column label="身高(cm)" prop="height" width="90" align="center" />
+          <el-table-column label="体重(kg)" prop="weight" width="90" align="center" />
+          <el-table-column label="吸烟支数" prop="smokingCount" width="90" align="center" />
+          <el-table-column label="总评分" prop="totalScore" width="80" align="center">
+            <template slot-scope="scope">
+              <el-tag :type="scope.row.totalScore >= 10 ? 'danger' : scope.row.totalScore >= 5 ? 'warning' : 'success'">
+                {{ scope.row.totalScore }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="风险等级" prop="riskLevel" width="100" align="center">
+            <template slot-scope="scope">
+              <el-tag
+                :type="scope.row.riskLevel === '高危' ? 'danger' : scope.row.riskLevel === '中危' ? 'warning' : 'success'">
+                {{ scope.row.riskLevel }}
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="创建时间" prop="createTime" width="160" align="center" />
+          <el-table-column label="操作" align="center" width="200" fixed="right">
+            <template slot-scope="scope">
+              <el-button size="mini" type="text" icon="el-icon-view" @click="handleViewRecord(scope.row)">查看</el-button>
+              <el-button size="mini" type="text" icon="el-icon-edit"
+                @click="handleUpdateRecord(scope.row)">编辑</el-button>
+              <el-button size="mini" type="text" icon="el-icon-delete"
+                @click="handleDeleteRecord(scope.row)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="viewOpen = false">关 闭</el-button>
+      </div>
+    </el-dialog>
+
+    <!-- 就诊记录弹窗 -->
+    <el-dialog :title="recordTitle" :visible.sync="recordOpen" width="700px" append-to-body>
+      <el-form ref="recordForm" :model="recordForm" :rules="recordRules" label-width="140px"
+        :disabled="!isRecordEdit && recordTitle === '查看就诊记录'">
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="糖化血红蛋白(%)" prop="sugarValue">
+              <el-input-number v-model="recordForm.sugarValue" :precision="1" :step="0.1" :min="0"
+                style="width: 100%" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="收缩压(mmHg)" prop="systolicPressure">
+              <el-input-number v-model="recordForm.systolicPressure" :min="0" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="舒张压(mmHg)" prop="diastolicPressure">
+              <el-input-number v-model="recordForm.diastolicPressure" :min="0" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="低密度脂蛋白(mmol/L)" prop="ldlValue">
+              <el-input-number v-model="recordForm.ldlValue" :precision="2" :step="0.01" :min="0" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="身高(cm)" prop="height">
+              <el-input-number v-model="recordForm.height" :precision="1" :step="0.1" :min="0" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="体重(kg)" prop="weight">
+              <el-input-number v-model="recordForm.weight" :precision="1" :step="0.1" :min="0" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="吸烟支数" prop="smokingCount">
+              <el-input-number v-model="recordForm.smokingCount" :min="0" style="width: 100%" />
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <!-- 病历图片 -->
+        <el-row :gutter="20">
+          <el-col :span="24">
+            <el-form-item label="病历图片" prop="imgUrl">
+              <el-upload :action="uploadUrl" list-type="picture-card" :file-list="recordImgList"
+                :on-preview="handlePictureCardPreview" :on-success="handleRecordImgSuccess"
+                :on-remove="handleRecordImgRemove" :before-upload="beforeMedicalImgUpload" :limit="5" multiple
+                :data="{ bizType: 'record' }" :disabled="!isRecordEdit && recordTitle === '查看就诊记录'">
+                <i class="el-icon-plus"></i>
+                <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，单个不超过500KB，最多5张</div>
+              </el-upload>
+              <el-dialog :visible.sync="dialogVisible" append-to-body>
+                <img width="100%" :src="dialogImageUrl" alt="">
+              </el-dialog>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <!-- 诊断结果 -->
+        <el-form-item label="诊断结果" prop="diagnosisResult">
+          <el-input v-model="recordForm.diagnosisResult" :rows="4" type="textarea" placeholder="请输入诊断结果"
+            :disabled="!isRecordEdit && recordTitle === '查看就诊记录'" />
+        </el-form-item>
+        <!-- 治疗建议 -->
+        <el-form-item label="治疗建议" prop="treatmentSuggestion">
+          <el-input v-model="recordForm.treatmentSuggestion" :rows="4" type="textarea" placeholder="请输入治疗建议"
+            :disabled="!isRecordEdit && recordTitle === '查看就诊记录'" />
+        </el-form-item>
+        <!-- 备注 -->
+        <el-form-item label="备注" prop="remark">
+          <el-input v-model="recordForm.remark" :rows="3" type="textarea" placeholder="请输入备注"
+            :disabled="!isRecordEdit && recordTitle === '查看就诊记录'" />
+        </el-form-item>
+        <!-- 评分结果展示（仅查看模式） -->
+        <div v-if="recordTitle === '查看就诊记录'"
+          style="margin-top: 20px; padding: 15px; background-color: #f5f7fa; border-radius: 4px;">
+          <h4 style="margin-top: 0; margin-bottom: 15px;">评分结果</h4>
+          <el-row :gutter="20">
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.sugarScore }}</div>
+                <div style="font-size: 12px; color: #909399;">糖化得分</div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.pressureScore }}</div>
+                <div style="font-size: 12px; color: #909399;">血压得分</div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.ldlScore }}</div>
+                <div style="font-size: 12px; color: #909399;">血脂得分</div>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20" style="margin-top: 15px;">
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.bmiScore }}</div>
+                <div style="font-size: 12px; color: #909399;">BMI得分</div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.smokingScore }}</div>
+                <div style="font-size: 12px; color: #909399;">吸烟得分</div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold;"
+                  :style="{ color: recordForm.totalScore >= 10 ? '#F56C6C' : recordForm.totalScore >= 5 ? '#E6A23C' : '#67C23A' }">
+                  {{ recordForm.totalScore }}</div>
+                <div style="font-size: 12px; color: #909399;">总评分</div>
+              </div>
+            </el-col>
+          </el-row>
+          <div style="margin-top: 15px; text-align: center;">
+            <el-tag
+              :type="recordForm.riskLevel === '高危' ? 'danger' : recordForm.riskLevel === '中危' ? 'warning' : 'success'"
+              size="medium">
+              风险等级：{{ recordForm.riskLevel }}
+            </el-tag>
+          </div>
+        </div>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button v-if="isRecordEdit || recordTitle === '新增就诊记录'" type="primary" @click="submitRecordForm">确
+          定</el-button>
+        <el-button @click="cancelRecord">取 消</el-button>
       </div>
     </el-dialog>
 
@@ -326,7 +550,45 @@ export default {
       dialogVisible: false,
       // 查看弹窗
       viewOpen: false,
-      viewForm: {}
+      viewForm: {},
+      // 就诊记录相关
+      recordLoading: false,
+      recordList: [],
+      recordTotal: 0,
+      recordQueryParams: {
+        pageNum: 1,
+        pageSize: 10
+      },
+      recordOpen: false,
+      recordTitle: "",
+      recordForm: {},
+      isRecordEdit: false,
+      recordImgList: [],
+      uploadUrl: "https://yiliao.admin.php7788.com/prod-api/system/file/upload",
+      // 就诊记录表单校验
+      recordRules: {
+        sugarValue: [
+          { required: true, message: "糖化血红蛋白不能为空", trigger: "blur" }
+        ],
+        systolicPressure: [
+          { required: true, message: "收缩压不能为空", trigger: "blur" }
+        ],
+        diastolicPressure: [
+          { required: true, message: "舒张压不能为空", trigger: "blur" }
+        ],
+        ldlValue: [
+          { required: true, message: "低密度脂蛋白不能为空", trigger: "blur" }
+        ],
+        height: [
+          { required: true, message: "身高不能为空", trigger: "blur" }
+        ],
+        weight: [
+          { required: true, message: "体重不能为空", trigger: "blur" }
+        ],
+        smokingCount: [
+          { required: true, message: "吸烟支数不能为空", trigger: "blur" }
+        ]
+      }
     }
   },
   created() {
@@ -343,6 +605,144 @@ export default {
         this.loading = false
       }
       )
+    },
+    /** 查询就诊记录列表 */
+    getRecordList() {
+      if (!this.form.patientId) return
+      this.recordLoading = true
+      request({
+        url: `https://yiliao.admin.php7788.com/prod-api/system/score/record/list?patientId=${this.form.patientId}`,
+        method: 'get'
+      }).then(response => {
+        if (response.code === 200) {
+          this.recordList = response.rows
+          this.recordTotal = response.total
+        }
+        this.recordLoading = false
+      }).catch(() => {
+        this.recordLoading = false
+      })
+    },
+    /** 新增就诊记录 */
+    handleAddRecord() {
+      this.recordForm = {
+        patientId: this.form.patientId,
+        sugarValue: undefined,
+        systolicPressure: undefined,
+        diastolicPressure: undefined,
+        ldlValue: undefined,
+        height: undefined,
+        weight: undefined,
+        smokingCount: undefined,
+        diagnosisResult: undefined,
+        treatmentSuggestion: undefined,
+        remark: undefined,
+        imgUrl: undefined
+      }
+      this.recordImgList = []
+      this.isRecordEdit = false
+      this.recordTitle = "新增就诊记录"
+      this.recordOpen = true
+    },
+    /** 查看就诊记录 */
+    handleViewRecord(row) {
+      this.recordForm = { ...row }
+      this.isRecordEdit = false
+      this.recordTitle = "查看就诊记录"
+      // 处理病历图片的回显
+      this.recordImgList = []
+      if (row.imgUrl) {
+        const cleanUrlStr = row.imgUrl.trim().replace(/^`|`$/g, '')
+        if (cleanUrlStr) {
+          this.recordImgList = cleanUrlStr.split(',').map(url => {
+            const cleanUrl = url.trim()
+            if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+              return { url: cleanUrl }
+            } else {
+              return { url: 'https://yiliao.admin.php7788.com' + cleanUrl }
+            }
+          }).filter(item => item.url)
+        }
+      }
+      this.recordOpen = true
+    },
+    /** 编辑就诊记录 */
+    handleUpdateRecord(row) {
+      this.recordForm = { ...row }
+      this.isRecordEdit = true
+      this.recordTitle = "编辑就诊记录"
+      // 处理病历图片的回显
+      this.recordImgList = []
+      if (row.imgUrl) {
+        const cleanUrlStr = row.imgUrl.trim().replace(/^`|`$/g, '')
+        if (cleanUrlStr) {
+          this.recordImgList = cleanUrlStr.split(',').map(url => {
+            const cleanUrl = url.trim()
+            if (cleanUrl.startsWith('http://') || cleanUrl.startsWith('https://')) {
+              return { url: cleanUrl }
+            } else {
+              return { url: 'https://yiliao.admin.php7788.com' + cleanUrl }
+            }
+          }).filter(item => item.url)
+        }
+      }
+      this.recordOpen = true
+    },
+    /** 删除就诊记录 */
+    handleDeleteRecord(row) {
+      this.$modal.confirm('是否确认删除该就诊记录？').then(() => {
+        return request({
+          url: `/system/score/record/${row.recordId}`,
+          method: 'delete'
+        })
+      }).then(() => {
+        this.getRecordList()
+        this.$modal.msgSuccess("删除成功")
+      }).catch(() => { })
+    },
+    /** 提交就诊记录 */
+    submitRecordForm() {
+      this.$refs["recordForm"].validate(valid => {
+        if (valid) {
+          const url = this.isRecordEdit ? '/system/score/record' : '/system/score/record'
+          const method = this.isRecordEdit ? 'put' : 'post'
+          request({
+            url: url,
+            method: method,
+            data: this.recordForm
+          }).then(() => {
+            this.$modal.msgSuccess(this.isRecordEdit ? "修改成功" : "新增成功")
+            this.recordOpen = false
+            this.getRecordList()
+          })
+        }
+      })
+    },
+    /** 取消就诊记录 */
+    cancelRecord() {
+      this.recordOpen = false
+      this.recordImgList = []
+    },
+    /** 病历图片上传成功 */
+    handleRecordImgSuccess(response, file, fileList) {
+      if (response.code === 200) {
+        this.recordImgList = fileList
+        this.recordForm.imgUrl = response.data
+        this.$message.success('上传成功')
+      } else {
+        this.$message.error(response.msg || '上传失败')
+      }
+    },
+    /** 病历图片移除 */
+    handleRecordImgRemove(file, fileList) {
+      this.recordImgList = fileList
+      const urls = fileList.map(item => {
+        if (item.response) {
+          return item.response.url
+        }
+        return item.url
+      }).join(',')
+      this.recordForm.imgUrl = urls
     },
     /** 获取医生列表 */
     getDoctorList() {
@@ -388,6 +788,7 @@ export default {
             }).filter(item => item.url) // 过滤空URL
           }
         }
+        this.getRecordList()
         this.viewOpen = true
       })
     },
@@ -482,6 +883,10 @@ export default {
         }
         this.open = true
         this.title = "修改患者信息"
+        // 加载就诊记录列表
+        this.$nextTick(() => {
+          this.getRecordList()
+        })
       })
     },
     /** 删除按钮操作 */
@@ -555,7 +960,7 @@ export default {
     },
     /** 图片上传成功 */
     handleMedicalImgSuccess(response, file, fileList) {
-      console.log(response,fileList,'response====')
+      console.log(response, fileList, 'response====')
       if (response.code === 200) {
         this.medicalRecordImgList = fileList
         // 将图片URL以逗号分隔存储
@@ -566,7 +971,7 @@ export default {
           return item.url
         }).join(',')
         this.form.imgUrl = urls
-        console.log(this.form,'this.form====')
+        console.log(this.form, 'this.form====')
         this.$message.success('上传成功')
       } else {
         this.$message.error(response.msg || '上传失败')
