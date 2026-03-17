@@ -74,7 +74,7 @@
       @pagination="getList" />
 
     <!-- 添加或修改患者信息对话框 -->
-    <el-dialog :title="title" :visible.sync="open" width="900px" append-to-body>
+    <el-dialog :title="title" :visible.sync="open" width="900px" append-to-body :close-on-click-modal="false">
       <el-form ref="form" :model="form" :rules="rules" label-width="120px">
         <el-row :gutter="20">
           <el-col :span="12">
@@ -207,7 +207,7 @@
     </el-dialog>
 
     <!-- 查看患者信息对话框 -->
-    <el-dialog title="患者详情" :visible.sync="viewOpen" width="900px" append-to-body>
+    <el-dialog title="患者详情" :visible.sync="viewOpen" width="900px" append-to-body :close-on-click-modal="false">
       <el-form ref="viewForm" :model="viewForm" label-width="120px" disabled>
         <el-row :gutter="20">
           <el-col :span="12">
@@ -328,7 +328,7 @@
     </el-dialog>
 
     <!-- 就诊记录弹窗 -->
-    <el-dialog :title="recordTitle" :visible.sync="recordOpen" width="700px" append-to-body>
+    <el-dialog :title="recordTitle" :visible.sync="recordOpen" width="700px" append-to-body :close-on-click-modal="false">
       <el-form ref="recordForm" :model="recordForm" :rules="recordRules" label-width="140px"
         :disabled="!isRecordEdit && recordTitle === '查看就诊记录'">
         <el-row :gutter="20">
