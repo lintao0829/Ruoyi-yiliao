@@ -163,6 +163,7 @@
         </div>
         <el-table v-loading="recordLoading" :data="recordList" border style="width: 100%">
           <el-table-column type="index" label="序号" width="50" align="center" />
+          <el-table-column label="就诊时间" prop="createTime" width="160" align="center" />
           <el-table-column label="糖化血红蛋白(%)" prop="sugarValue" width="120" align="center" />
           <el-table-column label="收缩压(mmHg)" prop="systolicPressure" width="110" align="center" />
           <el-table-column label="舒张压(mmHg)" prop="diastolicPressure" width="110" align="center" />
@@ -185,7 +186,7 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" prop="createTime" width="160" align="center" />
+
           <el-table-column label="操作" align="center" width="200" fixed="right">
             <template slot-scope="scope">
               <el-button size="mini" type="text" icon="el-icon-view" @click="handleViewRecord(scope.row)">查看</el-button>
@@ -288,6 +289,7 @@
         </el-form-item> -->
         <el-table v-loading="recordLoading" :data="recordList" border style="width: 100%">
           <el-table-column type="index" label="序号" width="50" align="center" />
+          <el-table-column label="就诊时间" prop="createTime" width="160" align="center" />
           <el-table-column label="糖化血红蛋白(%)" prop="sugarValue" width="120" align="center" />
           <el-table-column label="收缩压(mmHg)" prop="systolicPressure" width="110" align="center" />
           <el-table-column label="舒张压(mmHg)" prop="diastolicPressure" width="110" align="center" />
@@ -310,7 +312,6 @@
               </el-tag>
             </template>
           </el-table-column>
-          <el-table-column label="创建时间" prop="createTime" width="160" align="center" />
           <el-table-column label="操作" align="center" width="200" fixed="right">
             <template slot-scope="scope">
               <el-button size="mini" type="text" icon="el-icon-view" @click="handleViewRecord(scope.row)">查看</el-button>
@@ -328,7 +329,8 @@
     </el-dialog>
 
     <!-- 就诊记录弹窗 -->
-    <el-dialog :title="recordTitle" :visible.sync="recordOpen" width="700px" append-to-body :close-on-click-modal="false">
+    <el-dialog :title="recordTitle" :visible.sync="recordOpen" width="700px" append-to-body
+      :close-on-click-modal="false">
       <el-form ref="recordForm" :model="recordForm" :rules="recordRules" label-width="140px"
         :disabled="!isRecordEdit && recordTitle === '查看就诊记录'">
         <el-row :gutter="20">
@@ -537,9 +539,9 @@ export default {
         phone: [
           { required: true, message: "联系电话不能为空", trigger: "blur" }
         ],
-        gender: [
-          { required: true, message: "性别不能为空", trigger: "change" }
-        ]
+        // gender: [
+        //   { required: true, message: "性别不能为空", trigger: "change" }
+        // ]
       },
       // 医生列表
       doctorList: [],
