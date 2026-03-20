@@ -58,7 +58,7 @@
       <el-table-column label="诊断结果" prop="diagnosisResult" :show-overflow-tooltip="true" align="center" width="150" />
       <el-table-column label="治疗建议" prop="treatmentSuggestion" :show-overflow-tooltip="true" align="center"
         width="160" />
-      <el-table-column label="备注" prop="remark" :show-overflow-tooltip="true" align="center" />
+      <el-table-column label="医生备注" prop="remark" :show-overflow-tooltip="true" align="center" />
       <el-table-column label="操作" fixed="right" align="center" class-name="small-padding fixed-width" width="230">
         <template slot-scope="scope">
           <el-button size="mini" type="text" icon="el-icon-view" @click="handleView(scope.row)">查看</el-button>
@@ -149,8 +149,8 @@
         <el-form-item label="治疗建议" prop="treatmentSuggestion">
           <el-input v-model="form.treatmentSuggestion" :rows="4" type="textarea" placeholder="请输入治疗建议" />
         </el-form-item>
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="form.remark" :rows="3" type="textarea" placeholder="请输入备注" />
+        <el-form-item label="医生备注" prop="remark">
+          <el-input v-model="form.remark" :rows="3" type="textarea" placeholder="请输入医生备注" />
         </el-form-item> -->
       </el-form>
       <!-- 就诊记录列表 -->
@@ -245,7 +245,8 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="主治医生" prop="doctorId">
-              <el-select v-model="viewForm.doctorId" placeholder="请选择主治医生" style="width: 100%" multiple>
+               <el-select v-model="viewForm.doctorId" placeholder="请选择主治医生" clearable style="width: 100%"
+                @change="handleDoctorChange" multiple>
                 <el-option v-for="doctor in doctorList" :key="doctor.value" :label="doctor.label"
                   :value="doctor.value" />
               </el-select>
@@ -278,14 +279,14 @@
         <!-- <el-form-item label="诊断结果" prop="diagnosisResult">
           <el-input v-model="viewForm.diagnosisResult" :rows="4" type="textarea" placeholder="请输入诊断结果" />
         </el-form-item>
-        <el-form-item label="病历备注" prop="medicalRemark">
-          <el-input v-model="viewForm.medicalRemark" :rows="4" type="textarea" placeholder="请输入病历备注" />
+        <el-form-item label="病历医生备注" prop="medicalRemark">
+          <el-input v-model="viewForm.medicalRemark" :rows="4" type="textarea" placeholder="请输入病历医生备注" />
         </el-form-item>
         <el-form-item label="治疗建议" prop="treatmentSuggestion">
           <el-input v-model="viewForm.treatmentSuggestion" :rows="4" type="textarea" placeholder="请输入治疗建议" />
         </el-form-item> -->
-        <!-- <el-form-item label="备注" prop="remark">
-          <el-input v-model="viewForm.remark" :rows="3" type="textarea" placeholder="请输入备注" />
+        <!-- <el-form-item label="医生备注" prop="remark">
+          <el-input v-model="viewForm.remark" :rows="3" type="textarea" placeholder="请输入医生备注" />
         </el-form-item> -->
         <el-table v-loading="recordLoading" :data="recordList" border style="width: 100%">
           <el-table-column type="index" label="序号" width="50" align="center" />
@@ -314,7 +315,8 @@
           </el-table-column>
           <el-table-column label="操作" align="center" width="200" fixed="right">
             <template slot-scope="scope">
-              <el-button size="mini" type="text" icon="el-icon-view" @click="handleViewRecord(scope.row)">查看</el-button>
+              <el-button size="mini" type="text" icon="el-icon-view" :disabled="false"
+                @click="handleViewRecord(scope.row)">查看</el-button>
               <el-button size="mini" type="text" icon="el-icon-edit"
                 @click="handleUpdateRecord(scope.row)">编辑</el-button>
               <el-button size="mini" type="text" icon="el-icon-delete"
@@ -333,6 +335,59 @@
       :close-on-click-modal="false">
       <el-form ref="recordForm" :model="recordForm" :rules="recordRules" label-width="140px"
         :disabled="!isRecordEdit && recordTitle === '查看就诊记录'">
+        <!-- 评分结果展示（仅查看模式） -->
+        <div style=" padding: 30px; background-color: #f5f7fa; margin-bottom: 20px; border-radius: 4px;">
+          <h4 style="margin-top: 0; margin-bottom: 10px;">评分结果</h4>
+          <el-row :gutter="20">
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.sugarScore }}</div>
+                <div style="font-size: 12px; color: #909399;">糖化得分</div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.pressureScore }}</div>
+                <div style="font-size: 12px; color: #909399;">血压得分</div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.ldlScore }}</div>
+                <div style="font-size: 12px; color: #909399;">血脂得分</div>
+              </div>
+            </el-col>
+          </el-row>
+          <el-row :gutter="20" style="margin-top: 15px;">
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.bmiScore }}</div>
+                <div style="font-size: 12px; color: #909399;">BMI得分</div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.smokingScore }}</div>
+                <div style="font-size: 12px; color: #909399;">吸烟得分</div>
+              </div>
+            </el-col>
+            <el-col :span="8">
+              <div style="text-align: center;">
+                <div style="font-size: 24px; font-weight: bold;"
+                  :style="{ color: recordForm.totalScore >= 10 ? '#F56C6C' : recordForm.totalScore >= 5 ? '#E6A23C' : '#67C23A' }">
+                  {{ recordForm.totalScore }}</div>
+                <div style="font-size: 12px; color: #909399;">总评分</div>
+              </div>
+            </el-col>
+          </el-row>
+          <div style="margin-top: 15px; text-align: center;">
+            <el-tag
+              :type="recordForm.riskLevel === '高危' ? 'danger' : recordForm.riskLevel === '中危' ? 'warning' : 'success'"
+              size="medium">
+              风险等级：{{ recordForm.riskLevel }}
+            </el-tag>
+          </div>
+        </div>
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="糖化血红蛋白(%)" prop="sugarValue">
@@ -404,65 +459,11 @@
           <el-input v-model="recordForm.treatmentSuggestion" :rows="4" type="textarea" placeholder="请输入治疗建议"
             :disabled="!isRecordEdit && recordTitle === '查看就诊记录'" />
         </el-form-item>
-        <!-- 备注 -->
-        <el-form-item label="备注" prop="remark">
-          <el-input v-model="recordForm.remark" :rows="3" type="textarea" placeholder="请输入备注"
+        <!-- 医生备注 -->
+        <el-form-item label="医生备注" prop="remark">
+          <el-input v-model="recordForm.remark" :rows="3" type="textarea" placeholder="请输入医生备注"
             :disabled="!isRecordEdit && recordTitle === '查看就诊记录'" />
         </el-form-item>
-        <!-- 评分结果展示（仅查看模式） -->
-        <div v-if="recordTitle === '查看就诊记录'"
-          style="margin-top: 20px; padding: 15px; background-color: #f5f7fa; border-radius: 4px;">
-          <h4 style="margin-top: 0; margin-bottom: 15px;">评分结果</h4>
-          <el-row :gutter="20">
-            <el-col :span="8">
-              <div style="text-align: center;">
-                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.sugarScore }}</div>
-                <div style="font-size: 12px; color: #909399;">糖化得分</div>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div style="text-align: center;">
-                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.pressureScore }}</div>
-                <div style="font-size: 12px; color: #909399;">血压得分</div>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div style="text-align: center;">
-                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.ldlScore }}</div>
-                <div style="font-size: 12px; color: #909399;">血脂得分</div>
-              </div>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20" style="margin-top: 15px;">
-            <el-col :span="8">
-              <div style="text-align: center;">
-                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.bmiScore }}</div>
-                <div style="font-size: 12px; color: #909399;">BMI得分</div>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div style="text-align: center;">
-                <div style="font-size: 24px; font-weight: bold; color: #409EFF;">{{ recordForm.smokingScore }}</div>
-                <div style="font-size: 12px; color: #909399;">吸烟得分</div>
-              </div>
-            </el-col>
-            <el-col :span="8">
-              <div style="text-align: center;">
-                <div style="font-size: 24px; font-weight: bold;"
-                  :style="{ color: recordForm.totalScore >= 10 ? '#F56C6C' : recordForm.totalScore >= 5 ? '#E6A23C' : '#67C23A' }">
-                  {{ recordForm.totalScore }}</div>
-                <div style="font-size: 12px; color: #909399;">总评分</div>
-              </div>
-            </el-col>
-          </el-row>
-          <div style="margin-top: 15px; text-align: center;">
-            <el-tag
-              :type="recordForm.riskLevel === '高危' ? 'danger' : recordForm.riskLevel === '中危' ? 'warning' : 'success'"
-              size="medium">
-              风险等级：{{ recordForm.riskLevel }}
-            </el-tag>
-          </div>
-        </div>
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button v-if="isRecordEdit || recordTitle === '新增就诊记录'" type="primary" @click="submitRecordForm">确
@@ -610,6 +611,7 @@ export default {
     },
     /** 查询就诊记录列表 */
     getRecordList() {
+      console.log(this.form.patientId, 'this.form.patientId=======')
       if (!this.form.patientId) return
       this.recordLoading = true
       request({
@@ -653,6 +655,7 @@ export default {
       this.recordTitle = "查看就诊记录"
       // 处理病历图片的回显
       this.recordImgList = []
+      // this.recordImgList.push({ url: 'https://yiliao.admin.php7788.com' + row.imgUrl })
       if (row.imgUrl) {
         const cleanUrlStr = row.imgUrl.trim().replace(/^`|`$/g, '')
         if (cleanUrlStr) {
@@ -704,9 +707,10 @@ export default {
     },
     /** 提交就诊记录 */
     submitRecordForm() {
+      console.log(this.recordForm, 'this.recordForm=====')
       this.$refs["recordForm"].validate(valid => {
         if (valid) {
-          const url = this.isRecordEdit ? '/system/score/record' : '/system/score/record'
+          const url = this.isRecordEdit ? '/system/score/record' : '/system/score/record/submit'
           const method = this.isRecordEdit ? 'put' : 'post'
           request({
             url: url,
@@ -729,7 +733,19 @@ export default {
     handleRecordImgSuccess(response, file, fileList) {
       if (response.code === 200) {
         this.recordImgList = fileList
-        this.recordForm.imgUrl = response.data
+        // 将所有图片URL以逗号分隔存储，去掉域名前缀
+        const urls = fileList.map(item => {
+          if (item.response) {
+            let url = item.response.data
+            // 去掉https://yiliao.admin.php7788.com前缀
+            if (url.startsWith('https://yiliao.admin.php7788.com')) {
+              url = url.replace('https://yiliao.admin.php7788.com', '')
+            }
+            return url
+          }
+          return item.url
+        }).join(',')
+        this.recordForm.imgUrl = urls
         this.$message.success('上传成功')
       } else {
         this.$message.error(response.msg || '上传失败')
@@ -740,7 +756,12 @@ export default {
       this.recordImgList = fileList
       const urls = fileList.map(item => {
         if (item.response) {
-          return item.response.url
+          let url = item.response.data
+          // 去掉https://yiliao.admin.php7788.com前缀
+          if (url.startsWith('https://yiliao.admin.php7788.com')) {
+            url = url.replace('https://yiliao.admin.php7788.com', '')
+          }
+          return url
         }
         return item.url
       }).join(',')
@@ -767,12 +788,17 @@ export default {
     },
     /** 查看患者信息 */
     handleView(row) {
+      this.form.patientId = row.patientId
       const patientId = row.patientId || this.ids
       getPatient(patientId).then(response => {
         this.viewForm = response.data
-        // 处理医生ID的多选情况
-        if (this.viewForm.doctorId && typeof this.viewForm.doctorId === 'string') {
-          this.viewForm.doctorId = this.viewForm.doctorId.split(',').map(id => id.trim())
+        // 处理医生ID的多选情况，转换为数字类型匹配医生列表的value
+        if (this.viewForm.doctorId) {
+          if (typeof this.viewForm.doctorId === 'string') {
+            this.viewForm.doctorId = this.viewForm.doctorId.split(',').map(id => Number(id.trim()))
+          } else if (Array.isArray(this.viewForm.doctorId)) {
+            this.viewForm.doctorId = this.viewForm.doctorId.map(id => Number(id))
+          }
         }
         // 处理病历图片的回显
         if (this.viewForm.imgUrl) {
@@ -857,15 +883,6 @@ export default {
           } else if (Array.isArray(this.form.doctorId)) {
             this.form.doctorId = this.form.doctorId.map(id => Number(id))
           }
-        }
-        // 处理医生姓名的回显
-        if (this.form.doctorId) {
-          const doctorIds = Array.isArray(this.form.doctorId) ? this.form.doctorId : [this.form.doctorId]
-          const doctorNames = doctorIds.map(id => {
-            const doctor = this.doctorList.find(doctor => doctor.value === id)
-            return doctor ? doctor.label : id
-          }).filter(name => name)
-          this.form.doctorName = doctorNames.join(', ')
         }
         // 处理病历图片的回显
         if (this.form.imgUrl) {
