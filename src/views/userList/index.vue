@@ -103,7 +103,8 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <el-row :gutter="20">
+        <!-- 
+         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="科室" prop="department">
               <el-input v-model="form.department" placeholder="请输入科室" />
@@ -119,6 +120,7 @@
             </el-form-item>
           </el-col>
         </el-row>
+         -->
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="就诊时间" prop="visitTime">
@@ -245,7 +247,7 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="主治医生" prop="doctorId">
-               <el-select v-model="viewForm.doctorId" placeholder="请选择主治医生" clearable style="width: 100%"
+              <el-select v-model="viewForm.doctorId" placeholder="请选择主治医生" clearable style="width: 100%"
                 @change="handleDoctorChange" multiple>
                 <el-option v-for="doctor in doctorList" :key="doctor.value" :label="doctor.label"
                   :value="doctor.value" />
@@ -388,6 +390,23 @@
             </el-tag>
           </div>
         </div>
+        <el-row :gutter="20">
+          <el-col :span="12">
+            <el-form-item label="科室" prop="department">
+              <el-input v-model="recordForm.department" placeholder="请输入科室"
+                :disabled="!isRecordEdit && recordTitle === '查看就诊记录'" />
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="主治医生123" prop="doctorId">
+              <el-select v-model="recordForm.doctorId" placeholder="请选择主治医生" clearable style="width: 100%"
+                @change="handleDoctorChange" multiple :disabled="!isRecordEdit && recordTitle === '查看就诊记录'">
+                <el-option v-for="doctor in doctorList" :key="doctor.value" :label="doctor.label"
+                  :value="doctor.value" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+        </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="糖化血红蛋白(%)" prop="sugarValue">
@@ -650,11 +669,15 @@ export default {
     },
     /** 查看就诊记录 */
     handleViewRecord(row) {
+      console.log(row, 'row=======查看就诊记录')
       this.recordForm = { ...row }
       this.isRecordEdit = false
       this.recordTitle = "查看就诊记录"
       // 处理病历图片的回显
       this.recordImgList = []
+      if (Array.isArray(row.doctorId)) {
+        this.recordForm.doctorId = row.doctorId.map(id => Number(id))
+      }
       // this.recordImgList.push({ url: 'https://yiliao.admin.php7788.com' + row.imgUrl })
       if (row.imgUrl) {
         const cleanUrlStr = row.imgUrl.trim().replace(/^`|`$/g, '')
@@ -676,6 +699,10 @@ export default {
       this.recordForm = { ...row }
       this.isRecordEdit = true
       this.recordTitle = "编辑就诊记录"
+      // 处理医生ID的多选情况
+      if (Array.isArray(row.doctorId)) {
+        this.recordForm.doctorId = row.doctorId.map(id => Number(id))
+      }
       // 处理病历图片的回显
       this.recordImgList = []
       if (row.imgUrl) {
@@ -952,12 +979,26 @@ export default {
           const doctor = this.doctorList.find(doctor => doctor.value == item)
           return doctor ? doctor.label : ''
         }).filter(name => name)
-        this.form.doctorName = doctorNames.join(', ')
+        const doctorName = doctorNames.join(', ')
+        // 更新form和recordForm
+        if (this.form) {
+          this.form.doctorName = doctorName
+        }
+        if (this.recordForm) {
+          this.recordForm.doctorName = doctorName
+        }
       } else {
         // 单选情况
         const doctor = this.doctorList.find(item => item.value == value)
         if (doctor) {
-          this.form.doctorName = doctor.label
+          const doctorName = doctor.label
+          // 更新form和recordForm
+          if (this.form) {
+            this.form.doctorName = doctorName
+          }
+          if (this.recordForm) {
+            this.recordForm.doctorName = doctorName
+          }
         }
       }
     },
