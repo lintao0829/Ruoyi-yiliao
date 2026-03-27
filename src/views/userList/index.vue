@@ -398,7 +398,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="主治医生123" prop="doctorId">
+            <el-form-item label="主治医生" prop="doctorId">
               <el-select v-model="recordForm.doctorId" placeholder="请选择主治医生" clearable style="width: 100%"
                 @change="handleDoctorChange" multiple :disabled="!isRecordEdit && recordTitle === '查看就诊记录'">
                 <el-option v-for="doctor in doctorList" :key="doctor.value" :label="doctor.label"
