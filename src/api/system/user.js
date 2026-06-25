@@ -18,6 +18,14 @@ export function listDoctor(query) {
     params: query
   })
 }
+export function listDoctor_pc(query) {
+  return request({
+    url: '/system/user/queryList',
+    method: 'get',
+    params: query
+  })
+}
+
 
 
 
