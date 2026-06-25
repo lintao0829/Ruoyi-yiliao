@@ -37,6 +37,14 @@ const user = {
     },
     SET_PERMISSIONS: (state, permissions) => {
       state.permissions = permissions
+    },
+    SET_USER: (state, user) => {
+      state.user = user
+      if (user) {
+        localStorage.setItem('userInfo', JSON.stringify(user))
+      } else {
+        localStorage.removeItem('userInfo')
+      }
     }
   },
 
@@ -51,6 +59,9 @@ const user = {
         login(username, password, code, uuid).then(res => {
           setToken(res.token)
           commit('SET_TOKEN', res.token)
+          if (res.user) {
+            commit('SET_USER', res.user)
+          }
           resolve()
         }).catch(error => {
           reject(error)
@@ -77,6 +88,7 @@ const user = {
           commit('SET_NAME', user.userName)
           commit('SET_NICK_NAME', user.nickName)
           commit('SET_AVATAR', avatar)
+          commit('SET_USER', user)
           /* 初始密码提示 */
           if(res.isDefaultModifyPwd) {
             MessageBox.confirm('您的密码还是初始密码，请修改密码！',  '安全提示', {  confirmButtonText: '确定',  cancelButtonText: '取消',  type: 'warning' }).then(() => {
