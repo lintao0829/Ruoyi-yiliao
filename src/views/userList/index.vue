@@ -40,29 +40,20 @@
           />
         </el-select>
       </el-form-item>
-      <el-form-item label="主治医生" prop="doctorName">
+      <el-form-item label="主治医师" prop="userName">
         <el-select
-          v-model="queryParams.doctorName"
-          placeholder="请选择主治医生"
+          v-model="queryParams.userId"
+          placeholder="请选择主治医师"
           clearable
           style="width: 240px"
         >
           <el-option
             v-for="doctor in doctorList"
-            :key="doctor.value"
-            :label="doctor.label"
-            :value="doctor.label"
+            :key="doctor.userId"
+            :label="doctor.userName"
+            :value="doctor.userId"
           />
         </el-select>
-      </el-form-item>
-      <el-form-item label="科室" prop="department">
-        <el-input
-          v-model="queryParams.department"
-          placeholder="请输入科室"
-          clearable
-          style="width: 240px"
-          @keyup.enter.native="handleQuery"
-        />
       </el-form-item>
       <el-form-item>
         <el-button
@@ -159,14 +150,8 @@
         align="center"
       />
       <el-table-column
-        label="科室"
-        prop="department"
-        :show-overflow-tooltip="true"
-        align="center"
-      />
-      <el-table-column
-        label="主治医生"
-        prop="doctorName"
+        label="主治医师"
+        prop="userName"
         :show-overflow-tooltip="true"
         width="200"
         align="center"
@@ -313,24 +298,6 @@
             </el-form-item>
           </el-col>
         </el-row>
-        <!-- 
-         <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="科室" prop="department">
-              <el-input v-model="form.department" placeholder="请输入科室" />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="主治医生" prop="doctorId">
-              <el-select v-model="form.doctorId" placeholder="请选择主治医生" clearable style="width: 100%"
-                @change="handleDoctorChange" multiple>
-                <el-option v-for="doctor in doctorList" :key="doctor.value" :label="doctor.label"
-                  :value="doctor.value" />
-              </el-select>
-            </el-form-item>
-          </el-col>
-        </el-row>
-         -->
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="就诊时间" prop="visitTime">
@@ -347,7 +314,7 @@
             <el-form-item label="主治医师" prop="doctorId">
               <el-select
               :disabled="!isAdmin"
-                v-model="form.doctorId"
+                v-model="form.userId"
                 placeholder="请选择主治医师"
                 clearable
                 style="width: 100%"
@@ -355,9 +322,9 @@
               >
                 <el-option
                   v-for="doctor in doctorList"
-                  :key="doctor.value"
-                  :label="doctor.label"
-                  :value="doctor.value"
+                  :key="doctor.userId"
+                  :label="doctor.userName"
+                  :value="doctor.userId"
                 />
               </el-select>
             </el-form-item>
@@ -631,18 +598,10 @@
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="科室" prop="department">
-              <el-input
-                v-model="viewForm.department"
-                placeholder="请输入科室"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="主治医生" prop="doctorId">
+            <el-form-item label="主治医师" prop="doctorId">
               <el-select
                 v-model="viewForm.doctorId"
-                placeholder="请选择主治医生"
+                placeholder="请选择主治医师"
                 clearable
                 style="width: 100%"
                 @change="handleDoctorChange"
@@ -943,37 +902,6 @@
           </div>
         </div>
         <el-row :gutter="20">
-          <!-- <el-col :span="12">
-            <el-form-item label="科室" prop="department">
-              <el-input
-                v-model="recordForm.department"
-                placeholder="请输入科室"
-                :disabled="!isRecordEdit && recordTitle === '查看就诊记录'"
-              />
-            </el-form-item>
-          </el-col> -->
-          <!-- <el-col :span="12"> -->
-            <!-- <el-form-item label="主治医生" prop="doctorId">
-              <el-select
-                v-model="recordForm.doctorId"
-                placeholder="请选择主治医生"
-                clearable
-                style="width: 100%"
-                @change="handleDoctorChange"
-                multiple
-                :disabled="!isRecordEdit && recordTitle === '查看就诊记录'"
-              >
-                <el-option
-                  v-for="doctor in doctorList"
-                  :key="doctor.value"
-                  :label="doctor.label"
-                  :value="doctor.value"
-                />
-              </el-select>
-            </el-form-item> -->
-          <!-- </el-col> -->
-        </el-row>
-        <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="糖化血红蛋白(%)" prop="sugarValue">
               <el-input-number
@@ -1264,9 +1192,9 @@ export default {
     /** 查询患者列表 */
     getList() {
       this.loading = true;
-      const userId = JSON.parse(localStorage.getItem("userInfo"))?.userId;
-      console.log(userId, "UserIdddd");
-      this.queryParams.userId = userId;
+      // const userId = JSON.parse(localStorage.getItem("userInfo"))?.userId;
+      // console.log(userId, "UserIdddd");
+      // this.queryParams.userId = userId;
       listPatient(this.addDateRange(this.queryParams, this.dateRange)).then(
         (response) => {
           this.patientList = response.rows;
@@ -1471,9 +1399,10 @@ export default {
         .then((response) => {
           if (response.code === 200) {
             this.doctorList = response.rows.map((item) => ({
-              value: Number(item.userId),
-              label: item.userName,
+              userId: Number(item.userId),
+              userName: item.userName,
             }));
+            console.log(this.doctorList,'1111111111')
           }
         })
         .catch(() => {
@@ -1548,7 +1477,6 @@ export default {
         visitTime: undefined,
       };
       this.medicalRecordImgList = [];
-      this.resetForm("form");
     },
     /** 搜索按钮操作 */
     handleQuery() {
@@ -1558,7 +1486,20 @@ export default {
     /** 重置按钮操作 */
     resetQuery() {
       this.dateRange = [];
-      this.resetForm("queryForm");
+      this.queryParams = {
+        pageNum: 1,
+        pageSize: 10,
+        patientName: undefined,
+        gender: undefined,
+        age: undefined,
+        height: undefined,
+        weight: undefined,
+        phone: undefined,
+        address: undefined,
+        department: undefined,
+        diagnosisResult: undefined,
+        userId: undefined,
+      };
       this.handleQuery();
     },
     // 多选框选中数据
