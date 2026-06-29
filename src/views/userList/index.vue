@@ -903,51 +903,36 @@
         </div>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="糖化血红蛋白(%)" prop="sugarValue">
-              <el-input-number
-                v-model="recordForm.sugarValue"
-                :precision="1"
-                :step="0.1"
-                :min="0"
-                style="width: 100%"
-              />
+            <el-form-item label="糖化血红蛋白" prop="sugarValue">
+              <el-select v-model="recordForm.sugarValue" placeholder="请选择糖化指标" style="width: 100%">
+                <el-option label="<6.5% (0分)" :value="0" />
+                <el-option label="6.5~8% (1分)" :value="1" />
+                <el-option label=">8% (2分)" :value="2" />
+              </el-select>
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="收缩压(mmHg)" prop="systolicPressure">
-              <el-input-number
-                v-model="recordForm.systolicPressure"
-                :min="0"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-        </el-row>
-        <el-row :gutter="20">
-          <el-col :span="12">
-            <el-form-item label="舒张压(mmHg)" prop="diastolicPressure">
-              <el-input-number
-                v-model="recordForm.diastolicPressure"
-                :min="0"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
-          <el-col :span="12">
-            <el-form-item label="低密度脂蛋白(mmol/L)" prop="ldlValue">
-              <el-input-number
-                v-model="recordForm.ldlValue"
-                :precision="2"
-                :step="0.01"
-                :min="0"
-                style="width: 100%"
-              />
+            <el-form-item label="血压" prop="systolicPressure">
+              <el-select v-model="recordForm.systolicPressure" placeholder="请选择血压指标" style="width: 100%" @change="val => { recordForm.diastolicPressure = val; }">
+                <el-option label="正常 (0分)" :value="0" />
+                <el-option label="1级高血压 (1分)" :value="1" />
+                <el-option label="2级高血压 (2分)" :value="2" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="身高(cm)" prop="height">
+            <el-form-item label="低密度脂蛋白" prop="ldlValue">
+              <el-select v-model="recordForm.ldlValue" placeholder="请选择血脂指标" style="width: 100%">
+                <el-option label="<2.6 (0分)" :value="0" />
+                <el-option label="2.6~3.4 (1分)" :value="1" />
+                <el-option label=">3.4 (2分)" :value="2" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="身高(m)" prop="height">
               <el-input-number
                 v-model="recordForm.height"
                 :min="0"
@@ -955,24 +940,24 @@
               />
             </el-form-item>
           </el-col>
-          <el-col :span="12">
-            <el-form-item label="体重(kg)" prop="weight">
-              <el-input-number
-                v-model="recordForm.weight"
-                :min="0"
-                style="width: 100%"
-              />
-            </el-form-item>
-          </el-col>
         </el-row>
         <el-row :gutter="20">
           <el-col :span="12">
-            <el-form-item label="吸烟支数" prop="smokingCount">
-              <el-input-number
-                v-model="recordForm.smokingCount"
-                :min="0"
-                style="width: 100%"
-              />
+            <el-form-item label="体重(BMI)" prop="weight">
+              <el-select v-model="recordForm.weight" placeholder="请选择BMI指标" style="width: 100%">
+                <el-option label="<24 (0分)" :value="0" />
+                <el-option label="24~28 (1分)" :value="1" />
+                <el-option label=">28 (2分)" :value="2" />
+              </el-select>
+            </el-form-item>
+          </el-col>
+          <el-col :span="12">
+            <el-form-item label="控烟" prop="smokingCount">
+              <el-select v-model="recordForm.smokingCount" placeholder="请选择控烟指标" style="width: 100%">
+                <el-option label="不吸烟 (0分)" :value="0" />
+                <el-option label="1~10支 (1分)" :value="1" />
+                <el-option label=">10支 (2分)" :value="2" />
+              </el-select>
             </el-form-item>
           </el-col>
         </el-row>
@@ -1165,21 +1150,21 @@ export default {
       // 就诊记录表单校验
       recordRules: {
         sugarValue: [
-          { required: true, message: "糖化血红蛋白不能为空", trigger: "blur" },
+          { required: true, message: "糖化血红蛋白不能为空", trigger: "change" },
         ],
         systolicPressure: [
-          { required: true, message: "收缩压不能为空", trigger: "blur" },
+          { required: true, message: "血压不能为空", trigger: "change" },
         ],
         diastolicPressure: [
-          { required: true, message: "舒张压不能为空", trigger: "blur" },
+          { required: true, message: "舒张压不能为空", trigger: "change" },
         ],
         ldlValue: [
-          { required: true, message: "低密度脂蛋白不能为空", trigger: "blur" },
+          { required: true, message: "低密度脂蛋白不能为空", trigger: "change" },
         ],
         height: [{ required: true, message: "身高不能为空", trigger: "blur" }],
-        weight: [{ required: true, message: "体重不能为空", trigger: "blur" }],
+        weight: [{ required: true, message: "体重不能为空", trigger: "change" }],
         smokingCount: [
-          { required: true, message: "吸烟支数不能为空", trigger: "blur" },
+          { required: true, message: "控烟不能为空", trigger: "change" },
         ],
       },
     };
@@ -1189,6 +1174,14 @@ export default {
     this.getDoctorList();
   },
   methods: {
+    /** 将浮点score转为整数0/1/2 */
+    normalizeScore(val) {
+      const num = parseFloat(val);
+      if (isNaN(num)) return undefined;
+      if (num < 0.5) return 0;
+      if (num < 1.5) return 1;
+      return 2;
+    },
     /** 查询患者列表 */
     getList() {
       this.loading = true;
@@ -1248,6 +1241,13 @@ export default {
     handleViewRecord(row) {
       console.log(row, "row=======查看就诊记录");
       this.recordForm = { ...row };
+      // 将浮点score转为整数0/1/2，适配el-select
+      this.recordForm.sugarValue = this.normalizeScore(row.sugarValue);
+      this.recordForm.systolicPressure = this.normalizeScore(row.systolicPressure);
+      this.recordForm.diastolicPressure = this.normalizeScore(row.diastolicPressure);
+      this.recordForm.ldlValue = this.normalizeScore(row.ldlValue);
+      this.recordForm.weight = this.normalizeScore(row.weight);
+      this.recordForm.smokingCount = this.normalizeScore(row.smokingCount);
       this.isRecordEdit = false;
       this.recordTitle = "查看就诊记录";
       // 处理病历图片的回显
@@ -1280,6 +1280,13 @@ export default {
     /** 编辑就诊记录 */
     handleUpdateRecord(row) {
       this.recordForm = { ...row };
+      // 将浮点score转为整数0/1/2，适配el-select
+      this.recordForm.sugarValue = this.normalizeScore(row.sugarValue);
+      this.recordForm.systolicPressure = this.normalizeScore(row.systolicPressure);
+      this.recordForm.diastolicPressure = this.normalizeScore(row.diastolicPressure);
+      this.recordForm.ldlValue = this.normalizeScore(row.ldlValue);
+      this.recordForm.weight = this.normalizeScore(row.weight);
+      this.recordForm.smokingCount = this.normalizeScore(row.smokingCount);
       this.isRecordEdit = true;
       this.recordTitle = "编辑就诊记录";
       // 处理医生ID的多选情况
