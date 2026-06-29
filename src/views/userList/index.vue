@@ -932,7 +932,7 @@
             </el-form-item>
           </el-col>
           <el-col :span="12">
-            <el-form-item label="身高(m)" prop="height">
+            <el-form-item label="身高(cm)" prop="height">
               <el-input-number
                 v-model="recordForm.height"
                 :min="0"
