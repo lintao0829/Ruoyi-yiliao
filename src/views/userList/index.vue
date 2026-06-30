@@ -313,7 +313,7 @@
           <el-col :span="12">
             <el-form-item label="主治医师" prop="doctorId">
               <el-select
-              :disabled="!isAdmin"
+                :disabled="!isAdmin"
                 v-model="form.userId"
                 placeholder="请选择主治医师"
                 clearable
@@ -466,7 +466,8 @@
             <template slot-scope="scope">
               <el-tag
                 :type="
-                  scope.row.riskLevel === '高危'
+                  scope.row.riskLevel === '高危' ||
+                  scope.row.riskLevel === '很高危'
                     ? 'danger'
                     : scope.row.riskLevel === '中危'
                     ? 'warning'
@@ -904,7 +905,11 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="糖化血红蛋白" prop="sugarValue">
-              <el-select v-model="recordForm.sugarValue" placeholder="请选择糖化指标" style="width: 100%">
+              <el-select
+                v-model="recordForm.sugarValue"
+                placeholder="请选择糖化指标"
+                style="width: 100%"
+              >
                 <el-option label="<6.5% (0分)" :value="0" />
                 <el-option label="6.5~8% (1分)" :value="1" />
                 <el-option label=">8% (2分)" :value="2" />
@@ -913,7 +918,16 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="血压" prop="systolicPressure">
-              <el-select v-model="recordForm.systolicPressure" placeholder="请选择血压指标" style="width: 100%" @change="val => { recordForm.diastolicPressure = val; }">
+              <el-select
+                v-model="recordForm.systolicPressure"
+                placeholder="请选择血压指标"
+                style="width: 100%"
+                @change="
+                  (val) => {
+                    recordForm.diastolicPressure = val;
+                  }
+                "
+              >
                 <el-option label="正常 (0分)" :value="0" />
                 <el-option label="1级高血压 (1分)" :value="1" />
                 <el-option label="2级高血压 (2分)" :value="2" />
@@ -924,7 +938,11 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="低密度脂蛋白" prop="ldlValue">
-              <el-select v-model="recordForm.ldlValue" placeholder="请选择血脂指标" style="width: 100%">
+              <el-select
+                v-model="recordForm.ldlValue"
+                placeholder="请选择血脂指标"
+                style="width: 100%"
+              >
                 <el-option label="<2.6 (0分)" :value="0" />
                 <el-option label="2.6~3.4 (1分)" :value="1" />
                 <el-option label=">3.4 (2分)" :value="2" />
@@ -944,7 +962,11 @@
         <el-row :gutter="20">
           <el-col :span="12">
             <el-form-item label="体重(BMI)" prop="weight">
-              <el-select v-model="recordForm.weight" placeholder="请选择BMI指标" style="width: 100%">
+              <el-select
+                v-model="recordForm.weight"
+                placeholder="请选择BMI指标"
+                style="width: 100%"
+              >
                 <el-option label="<24 (0分)" :value="0" />
                 <el-option label="24~28 (1分)" :value="1" />
                 <el-option label=">28 (2分)" :value="2" />
@@ -953,7 +975,11 @@
           </el-col>
           <el-col :span="12">
             <el-form-item label="控烟" prop="smokingCount">
-              <el-select v-model="recordForm.smokingCount" placeholder="请选择控烟指标" style="width: 100%">
+              <el-select
+                v-model="recordForm.smokingCount"
+                placeholder="请选择控烟指标"
+                style="width: 100%"
+              >
                 <el-option label="不吸烟 (0分)" :value="0" />
                 <el-option label="1~10支 (1分)" :value="1" />
                 <el-option label=">10支 (2分)" :value="2" />
@@ -1150,7 +1176,11 @@ export default {
       // 就诊记录表单校验
       recordRules: {
         sugarValue: [
-          { required: true, message: "糖化血红蛋白不能为空", trigger: "change" },
+          {
+            required: true,
+            message: "糖化血红蛋白不能为空",
+            trigger: "change",
+          },
         ],
         systolicPressure: [
           { required: true, message: "血压不能为空", trigger: "change" },
@@ -1159,10 +1189,16 @@ export default {
           { required: true, message: "舒张压不能为空", trigger: "change" },
         ],
         ldlValue: [
-          { required: true, message: "低密度脂蛋白不能为空", trigger: "change" },
+          {
+            required: true,
+            message: "低密度脂蛋白不能为空",
+            trigger: "change",
+          },
         ],
         height: [{ required: true, message: "身高不能为空", trigger: "blur" }],
-        weight: [{ required: true, message: "体重不能为空", trigger: "change" }],
+        weight: [
+          { required: true, message: "体重不能为空", trigger: "change" },
+        ],
         smokingCount: [
           { required: true, message: "控烟不能为空", trigger: "change" },
         ],
@@ -1243,8 +1279,12 @@ export default {
       this.recordForm = { ...row };
       // 将浮点score转为整数0/1/2，适配el-select
       this.recordForm.sugarValue = this.normalizeScore(row.sugarValue);
-      this.recordForm.systolicPressure = this.normalizeScore(row.systolicPressure);
-      this.recordForm.diastolicPressure = this.normalizeScore(row.diastolicPressure);
+      this.recordForm.systolicPressure = this.normalizeScore(
+        row.systolicPressure
+      );
+      this.recordForm.diastolicPressure = this.normalizeScore(
+        row.diastolicPressure
+      );
       this.recordForm.ldlValue = this.normalizeScore(row.ldlValue);
       this.recordForm.weight = this.normalizeScore(row.weight);
       this.recordForm.smokingCount = this.normalizeScore(row.smokingCount);
@@ -1282,8 +1322,12 @@ export default {
       this.recordForm = { ...row };
       // 将浮点score转为整数0/1/2，适配el-select
       this.recordForm.sugarValue = this.normalizeScore(row.sugarValue);
-      this.recordForm.systolicPressure = this.normalizeScore(row.systolicPressure);
-      this.recordForm.diastolicPressure = this.normalizeScore(row.diastolicPressure);
+      this.recordForm.systolicPressure = this.normalizeScore(
+        row.systolicPressure
+      );
+      this.recordForm.diastolicPressure = this.normalizeScore(
+        row.diastolicPressure
+      );
       this.recordForm.ldlValue = this.normalizeScore(row.ldlValue);
       this.recordForm.weight = this.normalizeScore(row.weight);
       this.recordForm.smokingCount = this.normalizeScore(row.smokingCount);
@@ -1409,7 +1453,7 @@ export default {
               userId: Number(item.userId),
               userName: item.userName,
             }));
-            console.log(this.doctorList,'1111111111')
+            console.log(this.doctorList, "1111111111");
           }
         })
         .catch(() => {
