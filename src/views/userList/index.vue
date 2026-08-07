@@ -1665,7 +1665,7 @@ export default {
         {
           ...this.queryParams,
         },
-        `patient_${new Date().getTime()}.xlsx`
+        `病例列表_${this.parseTime(new Date(), "{y}{m}{d}")}.xlsx`
       );
     },
     /** 医生选择改变 */
